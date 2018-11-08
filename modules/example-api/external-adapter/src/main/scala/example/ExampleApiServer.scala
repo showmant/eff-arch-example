@@ -1,14 +1,14 @@
 package example
 
 import com.google.inject.Inject
-
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ ContentTypes, HttpEntity }
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import example.akkaHttp.AbstractAkkaHttpServer
 import example.config.AkkaHttpServerConf
 import example.config.di.Injector
+import example.router.ExampleRouter
 import javax.inject.Named
 
 import scala.concurrent.ExecutionContext
@@ -24,7 +24,7 @@ class ExampleApiServer @Inject()(
 )(
   implicit override val actorSystem: ActorSystem,
   override val actorMaterializer: ActorMaterializer,
-  @Named("default-app-context") override val ec: ExecutionContext
+  @Named("default-app-context") override val ec: ExecutionContext = ExecutionContext.global
 ) extends AbstractAkkaHttpServer {
 
   override protected def routes: Route =

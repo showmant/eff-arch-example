@@ -6,11 +6,15 @@ import example.shared.adapter.config.di.SharedSecondaryAdapterModules
 
 trait Injector
   extends ExampleSecondaryAdapterModules
+  with ExampleApiExternalAdapterModule
+  with ExampleApiUseCaseModule
   with SharedExternalAdapterModules
   with SharedSecondaryAdapterModules {
 
   val modules: Seq[Module] =
   exampleSecondaryAdapterModules ++
+//  exampleApiExternalAdapterModules ++
+  exampleApiUseCaseModules ++
   sharedExternalAdapterModules ++
   sharedSecondaryAdapterModules
 
