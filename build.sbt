@@ -10,7 +10,12 @@ lazy val allModules = Seq[ProjectReference](
   exampleApiInternalAdapter,
   exampleApiSecondaryAdapter,
   exampleApiUseCase,
-  exampleApiDomain
+  exampleApiDomain,
+  examplePaymentGatewayExternalAdapter,
+  examplePaymentGatewayInternalAdapter,
+  examplePaymentGatewaySecondaryAdapter,
+  examplePaymentGatewayUseCase,
+  examplePaymentGatewayDomain
 )
 
 /** ***********************************************
@@ -115,6 +120,55 @@ lazy val exampleApiDomain = (project in file("modules/example-api/domain"))
   .configs(Common.Settings.TestSeq: _*)
   .settings(ExampleApiProject.Settings.domainPjSettings: _*)
   .settings(libraryDependencies ++= ExampleApiProject.Dependencies.domainPjDeps)
+  .dependsOn(
+    sharedLib % "test->test;compile->compile;test->compile"
+  )
+
+/** ***********************************************
+  * example-payment-gateway-project
+  * ***********************************************/
+lazy val examplePaymentGatewayExternalAdapter =
+  (project in file("modules/example-payment-gateway/external-adapter"))
+    .configs(Common.Settings.TestSeq: _*)
+    .settings(ExamplePaymentGatewayProject.Settings.externalAdapterPjSettings: _*)
+    .settings(libraryDependencies ++= ExamplePaymentGatewayProject.Dependencies.externalAdapterPjDeps)
+    .dependsOn(
+      sharedExternalAdapter                 % "test->test;compile->compile;test->compile",
+      examplePaymentGatewaySecondaryAdapter % "test->test;compile->compile;test->compile"
+    )
+
+lazy val examplePaymentGatewayInternalAdapter =
+  (project in file("modules/example-payment-gateway/internal-adapter"))
+    .configs(Common.Settings.TestSeq: _*)
+    .settings(ExamplePaymentGatewayProject.Settings.internalAdapterPjSettings: _*)
+    .settings(libraryDependencies ++= ExamplePaymentGatewayProject.Dependencies.internalAdapterPjDeps)
+    .dependsOn(
+      sharedInternalAdapter                 % "test->test;compile->compile;test->compile",
+      examplePaymentGatewaySecondaryAdapter % "test->test;compile->compile;test->compile"
+    )
+
+lazy val examplePaymentGatewaySecondaryAdapter =
+  (project in file("modules/example-payment-gateway/secondary-adapter"))
+    .configs(Common.Settings.TestSeq: _*)
+    .settings(ExamplePaymentGatewayProject.Settings.secondaryAdapterPjSettings: _*)
+    .settings(libraryDependencies ++= ExamplePaymentGatewayProject.Dependencies.secondaryAdapterPjDeps)
+    .dependsOn(
+      sharedSecondaryAdapter       % "test->test;compile->compile;test->compile",
+      examplePaymentGatewayUseCase % "test->test;compile->compile;test->compile"
+    )
+
+lazy val examplePaymentGatewayUseCase = (project in file("modules/example-payment-gateway/usecase"))
+  .configs(Common.Settings.TestSeq: _*)
+  .settings(ExamplePaymentGatewayProject.Settings.useCasePjSettings: _*)
+  .settings(libraryDependencies ++= ExamplePaymentGatewayProject.Dependencies.useCasePjDeps)
+  .dependsOn(
+    examplePaymentGatewayDomain % "test->test;compile->compile;test->compile"
+  )
+
+lazy val examplePaymentGatewayDomain = (project in file("modules/example-payment-gateway/domain"))
+  .configs(Common.Settings.TestSeq: _*)
+  .settings(ExamplePaymentGatewayProject.Settings.domainPjSettings: _*)
+  .settings(libraryDependencies ++= ExamplePaymentGatewayProject.Dependencies.domainPjDeps)
   .dependsOn(
     sharedLib % "test->test;compile->compile;test->compile"
   )

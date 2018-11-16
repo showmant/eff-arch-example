@@ -129,6 +129,10 @@ object Common {
       sources in (Compile, doc) := Seq.empty,
       publishArtifact in (Compile, packageDoc) := false
     )
+    
+    lazy val unmanagedLibs = Seq(
+      unmanagedBase := baseDirectory.value / "lib"
+    )
   }
 
 }

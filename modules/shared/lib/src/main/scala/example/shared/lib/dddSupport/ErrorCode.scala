@@ -26,4 +26,7 @@ object ErrorCode {
   case object REDIS_COMMAND_ERROR extends ErrorCode("REDIS_COMMAND_ERROR")
   case object AWS_API_ERROR       extends ErrorCode("AWS_API_ERROR")
 
+  case object GMO_PG_ERROR       extends ErrorCode("GMO_PG_ERROR")
+  case object GMO_PG_MULTI_ERROR extends ErrorCode("GMO_PG_MULTI_ERROR")
+
 }
