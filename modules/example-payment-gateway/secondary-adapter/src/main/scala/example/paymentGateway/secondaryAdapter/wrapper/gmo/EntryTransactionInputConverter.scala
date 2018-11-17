@@ -4,25 +4,17 @@ import com.gmo_pg.g_pay.client.input.EntryTranInput
 import com.gmo_pg.g_pay.client.output.EntryTranOutput
 import example.paymentGateway.domain.model.input.gmoPgEntryTransactionInput.GmoPgEntryTransactionInput
 import example.paymentGateway.domain.model.output.gmoPgEntryTransactionOutput.GmoPgEntryTransactionOutput
+import example.paymentGateway.secondaryAdapter.config.GmoPgConf
 
-protected trait EntryTransactionInputConverter /* extends GMO用の設定Confを読み込む */ {
-  //この辺がConfに入っているべき
+protected trait EntryTransactionInputConverter  {
 
-  val GMO_SITE_ID       = ""
-  val GMO_SITE_PASSWORD = ""
+  val config: GmoPgConf
 
-  val GMO_SHOP_NUMBER   = ""
-  val GMO_SHOP_ID       = "" + GMO_SHOP_NUMBER
-  val GMO_SHOP_PASSWORD = ""
-
-  // 物理・論理モードの指定に使う。ださい。
-  val RONRI_MODE   = "0"
-  val BUTSURI_MODE = "1"
 
   def convertToGmoPGData(domainModel: GmoPgEntryTransactionInput): EntryTranInput = {
     val input = new EntryTranInput
-    input.setShopId(GMO_SHOP_ID)
-    input.setShopPass(GMO_SHOP_PASSWORD)
+    input.setShopId(config.shopId)
+    input.setShopPass(config.shopPass)
     input.setOrderId(domainModel.orderId)
     input.setJobCd(JobCode.CAPTURE)
     input.setAmount(domainModel.amount)
@@ -33,6 +25,7 @@ protected trait EntryTransactionInputConverter /* extends GMO用の設定Confを
 
   def convertToDomainModel(dataModel: EntryTranOutput): GmoPgEntryTransactionOutput = {
     GmoPgEntryTransactionOutput(
+      ???,
       dataModel.getAccessId,
       dataModel.getAccessPass
     )

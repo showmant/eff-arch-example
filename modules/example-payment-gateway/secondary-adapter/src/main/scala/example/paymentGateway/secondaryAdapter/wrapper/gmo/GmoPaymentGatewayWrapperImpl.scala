@@ -8,6 +8,7 @@ import example.paymentGateway.domain.model.input.gmoPgEntryTransactionInput.GmoP
 import example.paymentGateway.domain.model.input.gmoPgExecTransactionInput.GmoPgExecTransactionInput
 import example.paymentGateway.domain.model.output.gmoPgEntryTransactionOutput.GmoPgEntryTransactionOutput
 import example.paymentGateway.domain.model.output.gmoPgExecTransactionOutput.GmoPgExecTransactionOutput
+import example.paymentGateway.secondaryAdapter.config.GmoPgConf
 import example.shared.lib.dddSupport.Error.ThirdPartyServiceError
 import example.shared.lib.dddSupport.ErrorCode
 import monix.eval.Task
@@ -15,10 +16,11 @@ import monix.eval.Task
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
-class GmoPaymentGatewayWrapperImpl @Inject()(client: PaymentClient)(implicit val ec: ExecutionContext)
-  extends GmoPaymentGatewayWrapper
+class GmoPaymentGatewayWrapperImpl @Inject()(client: PaymentClient, override val config: GmoPgConf)(
+  implicit val ec: ExecutionContext
+) extends GmoPaymentGatewayWrapper
   with EntryTransactionInputConverter
   with ExecTransactionInputConverter {
 
