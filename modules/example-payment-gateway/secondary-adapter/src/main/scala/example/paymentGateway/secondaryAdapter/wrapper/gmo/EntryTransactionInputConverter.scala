@@ -5,7 +5,7 @@ import com.gmo_pg.g_pay.client.output.EntryTranOutput
 import example.paymentGateway.domain.model.input.gmoPgEntryTransactionInput.GmoPgEntryTransactionInput
 import example.paymentGateway.domain.model.output.gmoPgEntryTransactionOutput.GmoPgEntryTransactionOutput
 
-trait EntryTransactionInputConverter /* extends GMO用の設定Confを読み込む */ {
+protected trait EntryTransactionInputConverter /* extends GMO用の設定Confを読み込む */ {
   //この辺がConfに入っているべき
 
   val GMO_SITE_ID       = ""

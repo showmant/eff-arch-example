@@ -1,7 +1,6 @@
 package example.paymentGateway.secondaryAdapter.wrapper.gmo
 import cats.data.Writer
 import com.gmo_pg.g_pay.client.PaymentClient
-import com.gmo_pg.g_pay.client.impl.PaymentClientImpl
 import com.gmo_pg.g_pay.client.output._
 import com.google.inject.Inject
 import example.paymentGateway.domain.model.error.gmoError.GmoError
