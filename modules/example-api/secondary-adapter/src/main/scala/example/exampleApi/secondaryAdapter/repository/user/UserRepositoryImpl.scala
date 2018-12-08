@@ -18,22 +18,7 @@ class UserRepositoryImpl extends UserRepository with UserConverter {
   private val u = UserDataModel.syntax("u")
 
   override def resolveById[R: _task: _trantask: _readerDbSession](id: UserId): Eff[R, Option[User]] = {
-    for {
-      tran <- ask[R, Transaction]
-      q <- {
-        implicit val session: DBSession = fetchDBSession(tran)
-        val query = withSQL {
-          select
-            .from(UserDataModel as u)
-            .where
-            .eq(u.id, id.value)
-        }.map(UserDataModel(u.resultName))
-          .single
-          .apply
-          .map(convertToDomainModel)
-        read(query)
-      }
-    } yield q
+    ???
 //    val query: TransactionTask[ReadTransaction, Option[User]] =
 //      sessionAsk.map { implicit session =>
 //        withSQL {
@@ -50,26 +35,7 @@ class UserRepositoryImpl extends UserRepository with UserConverter {
   }
 
   override def store[R: _task: _trantask: _readerDbSession](entity: User): Eff[R, User] = {
-    for {
-      tran <- ask[R, Transaction]
-      q <- {
-        implicit val session: DBSession = fetchDBSession(tran)
-        val query = withSQL {
-          insert
-            .into(UserDataModel)
-            .namedValues(
-              u.id        -> entity.id.value,
-              u.name      -> entity.name,
-              u.createdAt -> entity.createdAt,
-              u.updatedAt -> entity.updatedAt
-            )
-            .onDuplicateKeyUpdate(
-              u.id -> entity.id.value
-            )
-        }.update().apply()
-        write(query).map(_ => entity)
-      }
-    } yield q
+    ???
 //
 //    val query: TransactionTask[ReadWriteTransaction, Int] =
 //      sessionAsk.map { implicit session =>
@@ -99,19 +65,7 @@ class UserRepositoryImpl extends UserRepository with UserConverter {
   }
 
   override def remove[R: _trantask: _readerDbSession](id: UserId): Eff[R, Unit] = {
-    for {
-      tran <- ask[R, Transaction]
-      q <- {
-        implicit val session: DBSession = fetchDBSession(tran)
-        val query = withSQL {
-          delete
-            .from(UserDataModel)
-            .where
-            .eq(u.id, id.value)
-        }.update.apply()
-        write(query).map(_ => ())
-      }
-    } yield q
+    ???
   }
 
 }

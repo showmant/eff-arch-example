@@ -1,6 +1,6 @@
 package example.user
 
-import example.akkaHttp.{DefaultPresenter, FormErrorResponseConverter}
+import example.akkaHttp.{ DefaultPresenter, FormErrorResponseConverter }
 import example.exampleApi.usecase.user.create.CreateUserUseCaseResult
 import example.shared.adapter.secondary.json.circe.JsonPrinter
 import javax.inject.Inject

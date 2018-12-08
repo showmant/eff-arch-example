@@ -2,15 +2,15 @@ package example
 
 import com.google.inject.Inject
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
-import akka.http.scaladsl.server.{RejectionHandler, Route}
+import akka.http.scaladsl.model.{ ContentTypes, HttpEntity }
+import akka.http.scaladsl.server.{ RejectionHandler, Route }
 import akka.stream.ActorMaterializer
 import example.akkaHttp.AbstractAkkaHttpServer
 import example.config.AkkaHttpServerConf
 import example.config.di.Injector
 import javax.inject.Named
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object ExampleApiServer extends App with Injector {
   val server = injector.getInstance(classOf[ExampleApiServer])
@@ -34,4 +34,3 @@ class ExampleApiServer @Inject()(
       }
     } ~ exampleRouter.routes
 }
-
