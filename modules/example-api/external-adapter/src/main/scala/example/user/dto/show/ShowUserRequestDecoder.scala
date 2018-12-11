@@ -3,7 +3,7 @@ import cats.data.{ NonEmptyList, Validated, Writer }
 import cats.data.Validated.{ Invalid, Valid }
 import cats.implicits._
 import io.circe.Decoder.Result
-import io.circe.{ AccumulatingDecoder, Decoder, DecodingFailure, HCursor }
+import io.circe._
 import io.tabmo.circe.extra.rules.{ IntRules, StringRules }
 import io.tabmo.json.rules._
 
@@ -66,34 +66,34 @@ class ShowUserRequestDecoder() {
 
   implicit def create4: AccumulatingDecoder[ShowUserRequest] = AccumulatingDecoder.instance[ShowUserRequest] {
     c: HCursor =>
-      //      val name = c.downField("name").read(StringRules.maxLength(32)).toValidatedNel
-      //      val lastName = c.downField("lastName").as[String].toValidatedNel
-      //      val age = c.downField("age").read(IntRules.positive()).toValidatedNel
-      //      val email = c.downField("email").read(StringRules.email).toValidatedNel
-      val name: Writer[List[DecodingFailure], String] = c.downField("name").read(StringRules.maxLength(32)) match {
-        case Right(s) => Writer.value(s)
-        case Left(e)  => Writer(List(e), "")
-      }
-      val lastName: Writer[List[DecodingFailure], String] = c.downField("lastName").as[String] match {
-        case Right(s) => Writer.value(s)
-        case Left(e)  => Writer(List(e), "")
-      }
-      val age: Writer[List[DecodingFailure], Int] = c.downField("age").read(IntRules.positive()) match {
-        case Right(s) => Writer.value(s)
-        case Left(e)  => Writer(List(e), 0)
-      }
-      val email: Writer[List[DecodingFailure], String] = c.downField("email").read(StringRules.email) match {
-        case Right(s) => Writer.value(s)
-        case Left(e)  => Writer(List(e), "")
+      implicit def toWriter[A](result: Result[A]): Writer[List[DecodingFailure], Option[A]] = result match {
+        case Right(value) => Writer.value(value.some)
+        case Left(e)      => Writer(List(e), none)
       }
 
+      val userId: Writer[List[DecodingFailure], Option[String]] =
+        c.downField("userId").read(StringRules.maxLength(32))
+      val firstName: Writer[List[DecodingFailure], Option[String]] =
+        c.downField("name").downField("firstName").read(StringRules.maxLength(32))
+      val lastName: Writer[List[DecodingFailure], Option[String]] =
+        c.downField("name").downField("lastName").read(StringRules.maxLength(32))
+      val age: Writer[List[DecodingFailure], Option[Int]]      = c.downField("age").read(IntRules.positive())
+      val email: Writer[List[DecodingFailure], Option[String]] = c.downField("email").read(StringRules.email)
+
       (for {
-        n  <- name
-        l  <- lastName
-        ag <- age
-      } yield ShowUserRequest(n, Name(n, l), ag)).run match {
-        case (Nil, b)    => Valid(b)
-        case (h :: t, _) => Invalid(NonEmptyList(h, t))
+        maybeUserId    <- userId
+        maybeFirstName <- firstName
+        maybeLastName  <- lastName
+        maybeAge       <- age
+      } yield
+        for {
+          userId    <- maybeUserId
+          firstName <- maybeFirstName
+          lastName  <- maybeLastName
+          age       <- maybeAge
+        } yield ShowUserRequest(userId, Name(firstName, lastName), age)).run match {
+        case (Nil, Some(request)) => Valid(request)
+        case (h :: t, _)          => Invalid(NonEmptyList(h, t))
       }
 
   }

@@ -1,21 +1,20 @@
 package example.user
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ ContentTypes, HttpEntity }
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{ Route, StandardRoute }
+import akka.http.scaladsl.server.{Route, StandardRoute}
 import akka.stream.ActorMaterializer
-import cats.data.Validated.{ Invalid, Valid }
-import cats.data.ValidatedNel
+import com.google.inject.name.Named
 import example.RequestDecoder
-import example.akkaHttp.{ AbstractAkkaHttpController, Request }
+import example.akkaHttp.AbstractAkkaHttpController
 import example.exampleApi.usecase.user.create.CreateUserUseCase
 import example.exampleApi.usecase.user.show.ShowUserUseCase
+import example.shared.lib.dddSupport.Error
 import example.user.dto.show.ShowUserRequest
 import javax.inject.Inject
 
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class UserController @Inject()(
   showUserPresenter: ShowUserPresenter,
@@ -23,7 +22,7 @@ class UserController @Inject()(
   createUserUseCase: CreateUserUseCase
 )(
   override implicit val actorMaterializer: ActorMaterializer,
-  override implicit val ec: ExecutionContext = ExecutionContext.global
+  @Named("default-app-context") override implicit val ec: ExecutionContext
 ) extends AbstractAkkaHttpController {
 
   override def routes: Route =
@@ -54,13 +53,13 @@ class UserController @Inject()(
             onComplete {
               for {
                 result  <- extractRequest(request)
-                request <- Future.successful(decode2[ShowUserRequest](result))
+                request <- Future.successful(decode[ShowUserRequest](result))
               } yield request
             } {
               case Success(s) =>
                 s match {
-                  case Valid(v)   => complete(s"${v.name.firstName}")
-                  case Invalid(e) => complete(s"${e.size}")
+                  case Right(v)   => complete(s"${v.name.firstName}")
+                  case Left(e) => complete(s"$e")
                 }
               case Failure(exception) => ???
             }
@@ -69,10 +68,10 @@ class UserController @Inject()(
         }
       }
     }
-  private def decode2[A <: Request](
+  private def decode[A](
     jsonString: String
-  )(implicit decoder: RequestDecoder[A]): ValidatedNel[io.circe.Error, A] =
-    decoder.decode2(jsonString)
+  )(implicit decoder: RequestDecoder[A]): Either[Error, A] =
+    decoder.decode(jsonString)
 
   private def index(): StandardRoute = ???
 
